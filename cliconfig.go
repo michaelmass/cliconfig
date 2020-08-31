@@ -1,11 +1,13 @@
 package cliconfig
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 
 	"github.com/pkg/errors"
+	"github.com/skratchdot/open-golang/open"
 	"gopkg.in/yaml.v2"
 )
 
@@ -26,8 +28,8 @@ func New(path string) *Client {
 	}
 }
 
-// NewFromFile creates a new config from a file
-func (client *Client) NewFromFile(config interface{}) error {
+// FromFile creates a new config from a file
+func (client *Client) FromFile(config interface{}) error {
 	content, err := ioutil.ReadFile(client.Path())
 
 	if err != nil {
@@ -88,6 +90,55 @@ func (client *Client) Init(config interface{}) error {
 	if err != nil {
 		return errors.Wrap(err, "Error creating config file")
 	}
+
+	return nil
+}
+
+// Reset updates the configuration file with default values
+func (client *Client) Reset(config interface{}) error {
+	path := client.Path()
+
+	err := os.MkdirAll(filepath.Dir(path), dirModePerm)
+
+	if err != nil {
+		return errors.Wrap(err, "Error creating config folder")
+	}
+
+	content, err := yaml.Marshal(config)
+
+	if err != nil {
+		return errors.Wrap(err, "Error encoding yaml config file")
+	}
+
+	err = ioutil.WriteFile(path, content, fileModePerm)
+
+	if err != nil {
+		return errors.Wrap(err, "Error writing config file")
+	}
+
+	return nil
+}
+
+// Open opens the configuration file inside the default file editor
+func (client *Client) Open() {
+	open.Run(client.Path())
+}
+
+// Show prints the content of the config file inside the console
+func (client *Client) Show(config interface{}) error {
+	err := client.FromFile(&config)
+
+	if err != nil {
+		return errors.Wrap(err, "Error reading config file")
+	}
+
+	content, err := yaml.Marshal(config)
+
+	if err != nil {
+		return errors.Wrap(err, "Error decoding content of config file")
+	}
+
+	fmt.Println(string(content))
 
 	return nil
 }
