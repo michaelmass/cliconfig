@@ -15,7 +15,8 @@ type OpenFunc func() error
 // ResetFunc is used to reset the config file
 type ResetFunc func() error
 
-func newConfig(showFunc ShowFunc, openFunc OpenFunc, resetFunc ResetFunc) *cobra.Command {
+// NewConfig returns a default config command
+func NewConfig(showFunc ShowFunc, openFunc OpenFunc, resetFunc ResetFunc) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "config",
 		Short: "Config has utilities for the configuration file.",
