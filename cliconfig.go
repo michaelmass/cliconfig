@@ -27,8 +27,8 @@ func New(path string) *Client {
 }
 
 // NewFromFile creates a new config from a file
-func NewFromFile(path string, config interface{}) error {
-	content, err := ioutil.ReadFile(path)
+func (client *Client) NewFromFile(config interface{}) error {
+	content, err := ioutil.ReadFile(client.Path())
 
 	if err != nil {
 		return errors.Wrap(err, "Error reading config file")
