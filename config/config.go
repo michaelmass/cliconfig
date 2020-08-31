@@ -129,8 +129,8 @@ func (client *Client) Reset() error {
 }
 
 // Open opens the configuration file inside the default file editor
-func (client *Client) Open() {
-	open.Run(client.Path())
+func (client *Client) Open() error {
+	return open.Run(client.Path())
 }
 
 // Show prints the content of the config file inside the console
