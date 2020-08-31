@@ -16,33 +16,40 @@ const (
 	fileModePerm = 644
 )
 
+// NewFunc is the function that creates the configuration struct with default values
+type NewFunc func() interface{}
+
 // Client is the configuration client for a cli
 type Client struct {
 	path string
+	new  NewFunc
 }
 
 // New creates a new cliconfig client
-func New(path string) *Client {
+func New(path string, newFunc NewFunc) *Client {
 	return &Client{
 		path: path,
+		new:  newFunc,
 	}
 }
 
 // FromFile creates a new config from a file
-func (client *Client) FromFile(config interface{}) error {
+func (client *Client) FromFile() (interface{}, error) {
+	config := client.new()
+
 	content, err := ioutil.ReadFile(client.Path())
 
 	if err != nil {
-		return errors.Wrap(err, "Error reading config file")
+		return nil, errors.Wrap(err, "Error reading config file")
 	}
 
 	err = yaml.Unmarshal(content, &config)
 
 	if err != nil {
-		return errors.Wrap(err, "Error decoding config file content")
+		return nil, errors.Wrap(err, "Error decoding config file content")
 	}
 
-	return nil
+	return config, nil
 }
 
 func homeDir() string {
@@ -66,7 +73,7 @@ func (client *Client) Path() string {
 }
 
 // Init initialize the configuration file with default values
-func (client *Client) Init(config interface{}) error {
+func (client *Client) Init() error {
 	path := client.Path()
 
 	if _, err := os.Stat(path); err == nil {
@@ -79,6 +86,7 @@ func (client *Client) Init(config interface{}) error {
 		return errors.Wrap(err, "Error creating config folder")
 	}
 
+	config := client.new()
 	content, err := yaml.Marshal(config)
 
 	if err != nil {
@@ -95,7 +103,7 @@ func (client *Client) Init(config interface{}) error {
 }
 
 // Reset updates the configuration file with default values
-func (client *Client) Reset(config interface{}) error {
+func (client *Client) Reset() error {
 	path := client.Path()
 
 	err := os.MkdirAll(filepath.Dir(path), dirModePerm)
@@ -104,6 +112,7 @@ func (client *Client) Reset(config interface{}) error {
 		return errors.Wrap(err, "Error creating config folder")
 	}
 
+	config := client.new()
 	content, err := yaml.Marshal(config)
 
 	if err != nil {
@@ -125,8 +134,8 @@ func (client *Client) Open() {
 }
 
 // Show prints the content of the config file inside the console
-func (client *Client) Show(config interface{}) error {
-	err := client.FromFile(&config)
+func (client *Client) Show() error {
+	config, err := client.FromFile()
 
 	if err != nil {
 		return errors.Wrap(err, "Error reading config file")
