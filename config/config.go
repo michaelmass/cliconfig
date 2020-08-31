@@ -34,10 +34,10 @@ func New(path string, newFunc NewFunc) *Client {
 }
 
 // FromFile creates a new config from a file
-func (client *Client) FromFile() (interface{}, error) {
+func (client *Client) FromFile(path string) (interface{}, error) {
 	config := client.new()
 
-	content, err := ioutil.ReadFile(client.Path())
+	content, err := ioutil.ReadFile(path)
 
 	if err != nil {
 		return nil, errors.Wrap(err, "Error reading config file")
@@ -135,7 +135,7 @@ func (client *Client) Open() {
 
 // Show prints the content of the config file inside the console
 func (client *Client) Show() error {
-	config, err := client.FromFile()
+	config, err := client.FromFile(client.Path())
 
 	if err != nil {
 		return errors.Wrap(err, "Error reading config file")
