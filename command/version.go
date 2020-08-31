@@ -13,7 +13,7 @@ func NewVersion(name string, version string) *cobra.Command {
 		Short: fmt.Sprintf("Print the version number of %s", name),
 		Long:  fmt.Sprintf("All software has versions. This is %s's", name),
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Printf(" v%s\n", version)
+			fmt.Printf("%s v%s\n", name, version)
 		},
 	}
 }
