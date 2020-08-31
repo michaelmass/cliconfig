@@ -1,4 +1,4 @@
-module github.com/michaelmass/cliconfig
+module github.com/michaelmass/cliutil
 
 go 1.15
 
