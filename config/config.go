@@ -43,7 +43,7 @@ func (client *Client) FromFile(path string) (interface{}, error) {
 		return nil, errors.Wrap(err, "Error reading config file")
 	}
 
-	err = yaml.Unmarshal(content, &config)
+	err = yaml.Unmarshal(content, config)
 
 	if err != nil {
 		return nil, errors.Wrap(err, "Error decoding config file content")
